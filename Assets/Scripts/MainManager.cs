@@ -12,13 +12,15 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
-    
+
     private bool m_Started = false;
-    private int m_Points;
-    
+    public int m_Points;
+
     private bool m_GameOver = false;
 
-    
+    public GameObject playerNAME;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,9 +39,9 @@ public class MainManager : MonoBehaviour
             }
         }
     }
-
     private void Update()
     {
+       
         if (!m_Started)
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -61,15 +63,38 @@ public class MainManager : MonoBehaviour
             }
         }
     }
-
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = "Jugador: " + ScoreManager.instance.nombre +  $" Score : {m_Points}";
+        
+    }
+    void UpdateScore(int score)
+    {
+        ScoreText.text = "Best Score: " + score;
     }
 
     public void GameOver()
     {
+        if (m_Points > ScoreManager.instance.score)
+        {
+            ScoreManager.instance.score = m_Points;
+            ScoreManager.instance.nombre = playerNAME.GetComponent<Text>().text;
+            ScoreManager.instance.mejorPlayer = ScoreManager.instance.nombre;
+            ScoreManager.instance.maxScore = ScoreManager.instance.score;
+
+            ScoreManager.instance.SaveNameScore();
+            UpdateScore(m_Points);
+        }
+        else
+        {
+            ScoreManager.instance.score = ScoreManager.instance.maxScore;
+            ScoreManager.instance.mejorPlayer = ScoreManager.instance.nombre;
+            ScoreManager.instance.maxScore = ScoreManager.instance.score;
+
+            ScoreManager.instance.SaveNameScore();
+            UpdateScore(m_Points);
+        }
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
